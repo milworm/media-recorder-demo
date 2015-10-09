@@ -1,0 +1,42 @@
+{
+	"manifest_version": 2,
+	"name": "MediaRecorder Demo",
+	"description": "MediaRecorder Demo",
+	"version": "0.1",
+
+	// a toolbar action exposed by our extension
+	"page_action": {
+		"default_title": "MediaRecorder Demo",
+		"default_icon": {
+			// "38": "data/icon_38.png"
+		}
+	},
+
+	// we need to have access to tabs and our website
+	"permissions": [
+		"tabs",
+		"activeTab",
+		"desktopCapture"
+	],
+
+	// icons
+	"icons": {
+		// "64": "data/icon_64.png",
+		// "128": "data/icon_128.png"
+	},
+
+	// this is where our content script is allowed to run
+	"content_scripts": [{
+		"matches": [
+			"http://localhost/*"
+		],
+		"js": ["data/app.js"],
+		"css": [],
+		"all_frames": false
+	}],
+
+	// runs in the background
+	"background": {
+		"scripts": ["index.js"]
+	}
+}
