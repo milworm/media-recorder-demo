@@ -16,7 +16,9 @@
 	"permissions": [
 		"tabs",
 		"activeTab",
-		"desktopCapture"
+		"desktopCapture"//,
+		// "audioCapture",
+		// "videoCapture"
 	],
 
 	// icons
@@ -26,17 +28,18 @@
 	},
 
 	// this is where our content script is allowed to run
-	"content_scripts": [{
-		"matches": [
-			"http://localhost/*"
-		],
-		"js": ["data/app.js"],
-		"css": [],
-		"all_frames": false
-	}],
+	// "content_scripts": [{
+	// 	"matches": ["http://localhost:*/*"],
+	// 	"js": ["data/contentScript.js"],
+	// 	"all_frames": false
+	// }],
+
+	"externally_connectable": {
+  		"matches": ["http://localhost:*/*"]
+	},
 
 	// runs in the background
 	"background": {
-		"scripts": ["index.js"]
+		"scripts": ["data/background.js", "data/recorder.js"]
 	}
 }
