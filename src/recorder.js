@@ -9,23 +9,7 @@ class Recorder {
     }
 
     start() {
-        // chrome.desktopCapture.chooseDesktopMedia(['screen', 'window'], this.onChoseDesktopMedia.bind(this));
-
-         navigator.webkitGetUserMedia({
-            audio: {
-                mandatory: {
-                    googEchoCancellation: "false",
-                    googAutoGainControl: "false",
-                    googNoiseSuppression: "false",
-                    googHighpassFilter: "false"
-                },
-                optional: []
-            }
-        }, function() {
-            console.log("stream exists");
-        }, function() {
-            console.log("stream not found");
-        });
+        chrome.desktopCapture.chooseDesktopMedia(['screen', 'window'], this.onChoseDesktopMedia.bind(this));
     }
 
     stop() {
@@ -49,33 +33,70 @@ class Recorder {
         if (! id) 
             return; // user clicked cancel.
 
-        // navigator.webkitGetUserMedia({
-        //     audio: {
-        //         mandatory: {
-        //             googEchoCancellation: "false",
-        //             googAutoGainControl: "false",
-        //             googNoiseSuppression: "false",
-        //             googHighpassFilter: "false"
-        //         },
-        //         optional: []
-        //     }
-        // }, function() {
-        //     console.log("stream exists");
-        // }, function() {
-        //     console.log("stream not found");
-        // });
+        this.initStreams(id);
+    }
 
-        // navigator.webkitGetUserMedia({
-        //     audio: false,
-        //     video: {
-        //         mandatory: {
-        //             chromeMediaSource: 'desktop',
-        //             chromeMediaSourceId: id,
-        //             maxWidth: screen.width,
-        //             maxHeight: screen.height
-        //         }
-        //     }
-        // }, this.onGetVideoStream.bind(this), this.onGetVideoStreamFailure.bind(this));
+    initStreams(id) {
+        Promise.all([
+            this.initAudioStream(),
+            this.initVideoStream(id)
+        ]).then(
+            this.onInitStreamsSuccess.bind(this), 
+            this.onInitStreamFailure.bind(this)
+        );
+    }
+
+    initAudioStream() {
+        return new Promise(function(response, error) {
+            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                chrome.tabs.sendMessage(tabs[0].id, {action: "initaudiostream"}, function(response) {
+                    if(response.stream)
+                        resolve({
+                            type: "audio",
+                            stream: response.stream
+                        });
+                    else
+                        error({
+                            type: "audio",
+                            error: response.error
+                        });
+                });
+            });
+        });
+    }
+
+    initVideoStream(id) {
+        return new Promise(function(resolve, error) {
+            navigator.webkitGetUserMedia({
+                audio: false,
+                video: {
+                    mandatory: {
+                        chromeMediaSource: 'desktop',
+                        chromeMediaSourceId: id,
+                        maxWidth: screen.width,
+                        maxHeight: screen.height
+                    }
+                }
+            }, function(stream) {
+                resolve({
+                    type: "video",
+                    stream: stream
+                });
+            }, function(errorObject) {
+                error({
+                    type: "video",
+                    error: errorObject
+                });
+            });
+        });
+    }
+
+    onInitStreamsSuccess(values) {
+        console.log(values);
+    }
+
+    onInitStreamFailure() {
+
     }
 
     onGetVideoStream(stream) {

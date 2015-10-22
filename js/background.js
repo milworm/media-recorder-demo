@@ -34,7 +34,9 @@
 //     })
 // });
 
-chrome.runtime.onMessageExternal.addListener(function(request, sender, callback) {
+"use strict";
+
+chrome.runtime.onMessageExternal.addListener(function (request, sender, callback) {
     Recorder.instance().record(callback);
     return true;
 });

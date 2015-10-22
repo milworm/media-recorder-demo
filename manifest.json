@@ -1,16 +1,8 @@
 {
 	"manifest_version": 2,
-	"name": "MediaRecorder Demo",
-	"description": "MediaRecorder Demo",
-	"version": "0.1",
-
-	// a toolbar action exposed by our extension
-	// "page_action": {
-	// 	"default_title": "MediaRecorder Demo",
-	// 	"default_icon": {
-	// 		// "38": "data/icon_38.png"
-	// 	}
-	// },
+	"name": "MediaRecorder",
+	"description": "MediaRecorder extension description",
+	"version": "0.2",
 
 	// "app": {
 	// 	"background": {
@@ -20,21 +12,14 @@
 	// 	}
 	// },
 
-	// we need to have access to tabs and our website
-	// "permissions": [
-		// "audioCapture"//,
-		// "tabs",
-		// "activeTab",
-		// "tabCapture",
-		// "audioCapture",
-		// "desktopCapture"//,
-		// "audioCapture",
-		// "videoCapture"
-	// ],
+	"externally_connectable": {
+		"matches": ["*://localhost:*/*"]
+	},
 
 	"permissions" : [
 		"tabs",
-		"activeTab"
+		"activeTab",
+		"desktopCapture"
 	],
 
 	"content_scripts": [{
@@ -43,27 +28,8 @@
 		"all_frames": false
 	}],
 
-	// icons
-	// "icons": {
-		// "64": "data/icon_64.png",
-		// "128": "data/icon_128.png"
-	// }//,
-
-	// this is where our content script is allowed to run
-	// "content_scripts": [{
-	// 	"matches": ["http://localhost:*/*"],
-	// 	"js": ["data/contentScript.js"],
-	// 	"all_frames": false
-	// }],
-
-	// "externally_connectable": {
- //  		"matches": ["http://localhost:*/*"]
-	// },
-
 	// runs in the background
-	// "background": {
-	// 	"scripts": ["data/background.js"]
-	// 	// "scripts": ["data/background.js", "data/recorder.js"]
-	// 	// "page": "data/page.html" 
-	// }
+	"background": {
+		"scripts": ["js/recorder.js", "js/background.js"]
+	}
 }
