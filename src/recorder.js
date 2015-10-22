@@ -9,7 +9,23 @@ class Recorder {
     }
 
     start() {
-        chrome.desktopCapture.chooseDesktopMedia(['screen', 'window'], this.onChoseDesktopMedia.bind(this));
+        // chrome.desktopCapture.chooseDesktopMedia(['screen', 'window'], this.onChoseDesktopMedia.bind(this));
+
+         navigator.webkitGetUserMedia({
+            audio: {
+                mandatory: {
+                    googEchoCancellation: "false",
+                    googAutoGainControl: "false",
+                    googNoiseSuppression: "false",
+                    googHighpassFilter: "false"
+                },
+                optional: []
+            }
+        }, function() {
+            console.log("stream exists");
+        }, function() {
+            console.log("stream not found");
+        });
     }
 
     stop() {
@@ -33,17 +49,33 @@ class Recorder {
         if (! id) 
             return; // user clicked cancel.
 
-        navigator.webkitGetUserMedia({
-            audio: false,
-            video: {
-                mandatory: {
-                    chromeMediaSource: 'desktop',
-                    chromeMediaSourceId: id,
-                    maxWidth: screen.width,
-                    maxHeight: screen.height
-                }
-            }
-        }, this.onGetVideoStream.bind(this), this.onGetVideoStreamFailure.bind(this));
+        // navigator.webkitGetUserMedia({
+        //     audio: {
+        //         mandatory: {
+        //             googEchoCancellation: "false",
+        //             googAutoGainControl: "false",
+        //             googNoiseSuppression: "false",
+        //             googHighpassFilter: "false"
+        //         },
+        //         optional: []
+        //     }
+        // }, function() {
+        //     console.log("stream exists");
+        // }, function() {
+        //     console.log("stream not found");
+        // });
+
+        // navigator.webkitGetUserMedia({
+        //     audio: false,
+        //     video: {
+        //         mandatory: {
+        //             chromeMediaSource: 'desktop',
+        //             chromeMediaSourceId: id,
+        //             maxWidth: screen.width,
+        //             maxHeight: screen.height
+        //         }
+        //     }
+        // }, this.onGetVideoStream.bind(this), this.onGetVideoStreamFailure.bind(this));
     }
 
     onGetVideoStream(stream) {

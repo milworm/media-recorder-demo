@@ -11,5 +11,5 @@ gulp.task('build-js', function() {
              // catch and print errors
              .on('error', console.error.bind(console))
              // put files to chrome data dir
-            .pipe(gulp.dest('./data'));
+            .pipe(gulp.dest('./js'));
 });

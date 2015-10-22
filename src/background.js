@@ -17,10 +17,19 @@
 // });
 
 // chrome.pageAction.onClicked.addListener(function(tab) {
-//     Recorder.instance().record();
+//     Recorder.instance().record(function() {
+//         console.log("works");
+//     });
 // });
 
-chrome.runtime.onMessageExternal.addListener(function(request, sender, callback) {
-    Recorder.instance().record(callback);
-    return true;
-});
+// chrome.runtime.onMessageExternal.addListener(function(request, sender, callback) {
+//     Recorder.instance().record(callback);
+//     return true;
+// });
+
+// chrome.runtime.onInstalled.addListener(function(e) {
+//     chrome.tabs.create({
+//         url: chrome.extension.getURL("data/welcome.html"),
+//         active: true
+//     })
+// });
