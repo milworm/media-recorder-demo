@@ -11,7 +11,6 @@ FileSaver = new function() {
         }).then(function(dir) {
             directlyEntry = dir;
             return removeFile(fileName);
-            
         }).then(function() {
             return new Promise(function(resolve, error) {
                 directlyEntry.getFile(fileName, {create: true}, resolve);
@@ -75,9 +74,21 @@ FileSaver = new function() {
             console.log("fs files saved");
         });
     }
+
+    this.readFile = function(fileName) {
+        var directlyEntry;
+        return new Promise(function(resolve, error) {
+            fs.root.getDirectory("/tmp", {create: true}, resolve);
+        }).then(function(dir) {
+            directlyEntry = dir;
+            return new Promise(function(resolve, error) {
+                directlyEntry.getFile(fileName, {}, resolve);
+            });
+        });
+    };
 }
 
-function startRecording() {
+function startRecording(callback) {
     var screenId,
         tabId,
         audioRecorder,
@@ -162,7 +173,6 @@ function startRecording() {
         // instead of attaching the event listeners directly to the <EMBED> element
         // to ensure that the listeners are active before the NaCl module 'load'
         // event fires.
-        mark1 = performance.now();
         var listenerEl = document.body;
         listenerEl.appendChild(moduleEl);
 
@@ -171,41 +181,41 @@ function startRecording() {
         // background page (see crbug.com/350445).
         moduleEl.offsetTop;
 
-        listenerEl.addEventListener('load', function() {
-            console.log(arguments);
-        }, true);
-        listenerEl.addEventListener('message', function() {
-            console.log(arguments);
-        }, true);
-        listenerEl.addEventListener('error', function() {
-            console.log(arguments);
-        }, true);
-        listenerEl.addEventListener('crash', function() {
-            console.log(arguments);
-            console.log(performance.now() - mark1);
-        }, true);
+        return new Promise(function(resolve, error) {
+            var mark1 = performance.now();
+
+            listenerEl.addEventListener('error', error, true);
+            listenerEl.addEventListener('crash', function() {
+                console.log(performance.now() - mark1);
+                resolve("output.webm");
+            }, true);
+        });
     }
 
     return new Promise(function(resolve, reject) {
         chrome.desktopCapture.chooseDesktopMedia(['screen', 'window'], resolve);
-    }).then(function(id) {
+    })
+    .then(function(id) {
         screenId = id;
         return new Promise(function(resolve, reject) {
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
                 resolve(tabId = tabs[0].id);
             });
         });
-    }).then(function(tabId) {
+    })
+    .then(function(tabId) {
         return Promise.all([
             getVideoStream(),
             getAudioStream()
         ]);
-    }).then(function(streams) {
+    })
+    .then(function(streams) {
         return {
             video: streams[0],
             audio: streams[1]
         }
-    }).then(function(streams) {
+    })
+    .then(function(streams) {
         // init audio recorder
         var context = new AudioContext(),
             source = context.createMediaStreamSource(streams.audio);
@@ -216,7 +226,8 @@ function startRecording() {
 
         audioRecorder.record();
         return streams;
-    }).then(function(streams) {
+    })
+    .then(function(streams) {
         // init video recorder
         return new Promise(function(resolve, reject) {
             var stream = streams.video;
@@ -232,7 +243,8 @@ function startRecording() {
 
             videoRecorder.start();
         });
-    }).then(function() {
+    })
+    .then(function() {
         return new Promise(function(resolve, error) {
             var webm = new Blob(videoBuffer, {
                 type: "video/webm"
@@ -245,7 +257,8 @@ function startRecording() {
                 });
             });
         });
-    }).then(function(data) {
+    })
+    .then(function(data) {
         return FileSaver.save([{
             name: "input.webm", 
             data: data.webm
@@ -253,9 +266,27 @@ function startRecording() {
             name: "input.wav", 
             data: data.wav
         }]);
-    }).then(loadModule);
+    })
+    .then(loadModule)
+    .then(FileSaver.readFile)
+    .then(function(fileEntry) {
+        return new Promise(function(resolve, error) {
+            fileEntry.file(resolve, error);
+        });
+    })
+    .then(function(file) {
+        return new Promise(function(resolve, error) {
+            var reader = new FileReader();
+            reader.onloadend = function() {
+                resolve(reader.result);
+            };
+            reader.readAsDataURL(file);
+        });
+    })
+    .then(callback);
 }
 
 chrome.runtime.onMessageExternal.addListener(function(request, sender, callback) {
-    startRecording();
+    startRecording(callback);
+    return true;
 });
