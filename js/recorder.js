@@ -52,7 +52,9 @@ var Recorder = (function () {
     }, {
         key: 'initStreams',
         value: function initStreams(id) {
-            Promise.all([this.initAudioStream(), this.initVideoStream(id)]).then(this.onInitStreamsSuccess.bind(this), this.onInitStreamFailure.bind(this));
+            Promise.all([
+            // this.initAudioStream(),
+            this.initVideoStream(id)]).then(this.onInitStreamsSuccess.bind(this), this.onInitStreamFailure.bind(this));
         }
     }, {
         key: 'initAudioStream',
@@ -67,7 +69,7 @@ var Recorder = (function () {
             var me = this;
             return new Promise(function (resolve, error) {
                 navigator.webkitGetUserMedia({
-                    audio: false,
+                    audio: { mandatory: { chromeMediaSource: 'system' } },
                     video: {
                         mandatory: {
                             chromeMediaSource: 'desktop',
@@ -81,6 +83,7 @@ var Recorder = (function () {
                     me.videoStream = stream;
                     resolve();
                 }, function (errorObject) {
+                    debugger;
                     error({
                         type: "video",
                         error: errorObject
@@ -93,13 +96,25 @@ var Recorder = (function () {
         value: function onInitStreamsSuccess(values) {
             this.init();
 
-            this.videoRecorder.start();
-            chrome.tabs.sendMessage(this.tabId, { action: "start" });
+            this.startVideoRecording();
+            // this.startAudioRecording();
         }
     }, {
         key: 'onInitStreamFailure',
         value: function onInitStreamFailure() {
             console.log("initStreams failed");
+        }
+    }, {
+        key: 'startVideoRecording',
+        value: function startVideoRecording() {
+            this.videoRecorder.start();
+        }
+    }, {
+        key: 'startAudioRecording',
+        value: function startAudioRecording() {
+            chrome.tabs.sendMessage(this.tabId, {
+                action: "start"
+            });
         }
     }, {
         key: 'init',

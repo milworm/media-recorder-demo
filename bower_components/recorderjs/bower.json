@@ -1,0 +1,21 @@
+{
+  "name": "recorderjs",
+  "version": "0.0.0",
+  "homepage": "https://github.com/faradayio/Recorderjs",
+  "authors": [
+    "Tristan Davies <github@tristan.io>"
+  ],
+  "description": "A plugin for recording/exporting the output of Web Audio API nodes",
+  "main": "recorder.js",
+  "moduleType": [
+    "globals"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

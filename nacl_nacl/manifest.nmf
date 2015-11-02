@@ -1,0 +1,10 @@
+{
+  "program": {
+    "x86-64": { 
+        "url": "/nacl/ffmpeg.x86-64.nexe" 
+    },
+    "x86-32": { 
+        "url": "/nacl/ffmpeg.x86-32.nexe" 
+    }
+  }
+}

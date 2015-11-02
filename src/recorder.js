@@ -41,7 +41,7 @@ class Recorder {
 
     initStreams(id) {
         Promise.all([
-            this.initAudioStream(),
+            // this.initAudioStream(),
             this.initVideoStream(id)
         ]).then(
             this.onInitStreamsSuccess.bind(this), 
@@ -59,7 +59,7 @@ class Recorder {
         var me = this;
         return new Promise(function(resolve, error) {
             navigator.webkitGetUserMedia({
-                audio: false,
+                audio: {mandatory: {chromeMediaSource: 'system'}},
                 video: {
                     mandatory: {
                         chromeMediaSource: 'desktop',
@@ -73,6 +73,7 @@ class Recorder {
                 me.videoStream = stream;
                 resolve();
             }, function(errorObject) {
+                debugger;
                 error({
                     type: "video",
                     error: errorObject
@@ -84,12 +85,22 @@ class Recorder {
     onInitStreamsSuccess(values) {
         this.init();
 
-        this.videoRecorder.start();
-        chrome.tabs.sendMessage(this.tabId, {action: "start"});
+        this.startVideoRecording();
+        // this.startAudioRecording();
     }
 
     onInitStreamFailure() {
         console.log("initStreams failed");
+    }
+
+    startVideoRecording() {
+        this.videoRecorder.start();
+    }
+
+    startAudioRecording() {
+        chrome.tabs.sendMessage(this.tabId, {
+            action: "start"
+        });
     }
 
     init() {

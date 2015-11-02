@@ -1,13 +1,3 @@
-// setTimeout(function() {
-//     navigator.webkitGetUserMedia({
-//         audio: true
-//     }, function() {
-//         console.log(arguments);
-//     }, function() {
-//         console.log(arguments);
-//     });
-// }, 2000);
-
 class AudioRecorder {
     static instance() {
         return this.recorder = this.recorder || new this();
@@ -21,59 +11,39 @@ class AudioRecorder {
 
     stop() {
         this.recording = false;
+        this.recorder.stop();
+        this.recorder.exportWAV(function(wav) {
+            console.log("exported wav");
+            var url = window.webkitURL.createObjectURL(wav),
+                a = document.createElement("a");
 
-        try {
-            this.audioRecorder.stream.getTracks().forEach(function(tack) {
-                tack.stop();
-            });
-        } catch(e) {}
-
-        try {
-            this.audioRecorder.stop();
-        } catch(e) {}
-
-        var blob = new Blob(this.audioBuffer, {
-            type: "audio/ogg"
+            document.body.appendChild(a);
+            a.style = "display:none";
+            a.href = url;
+            a.download = "audio.wav";
+            a.click();
+            URL.revokeObjectURL(url);
         });
-
-        var url = URL.createObjectURL(blob),
-            a = document.createElement("a");
-
-        document.body.appendChild(a);
-        a.style = "display:none";
-        a.href = url;
-        a.download = "audio.wav";
-        a.click();
-        URL.revokeObjectURL(url);
-
-        delete this.audioRecorder;
     }
 
     start() {
         this.recording = true;
-        this.audioRecorder.start();
+        this.recorder.record();
     }
 
-    onGetStreamSuccess(stream) {
-        var recorder = new MediaRecorder(stream);
+    onGetStreamSuccess(mediaStream) {
+        var context = new AudioContext(),
+            source = context.createMediaStreamSource(mediaStream),
+            recorder = new Recorder(source, {
+                workerPath: chrome.extension.getURL("/bower_components/recorderjs/recorderWorker.js")
+            });
 
-        this.audioBuffer = [];
-        this.audioRecording = true;
-        this.audioRecorder = recorder;
-
-        recorder.ondataavailable = this.onAudioRecorderDataAvaible.bind(this);
+        this.recording = true;
+        this.recorder = recorder;
     }
 
     onGetStreamFailure() {
 
-    }
-
-    onAudioRecorderDataAvaible(e) {
-        debugger;
-        if(! e.data)
-            return ;
-
-        this.audioBuffer.push(e.data);
     }
 }
 

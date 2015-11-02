@@ -1,0 +1,14 @@
+{
+  "name": "chrome-api",
+  "homepage": "https://github.com/Rob--W/chrome-api",
+  "_release": "f2c022b7dc",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "f2c022b7dc53100e80f948e7a66caed956c84bb4"
+  },
+  "_source": "https://github.com/Rob--W/chrome-api.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/Rob--W/chrome-api.git",
+  "_direct": true
+}

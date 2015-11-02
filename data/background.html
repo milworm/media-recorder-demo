@@ -1,0 +1,13 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Media Recorder</title>
+
+    <script src="./fs.js"></script>
+    <script src="/new/recorder.js"></script>
+    <script src="/new/background.js"></script>
+</head>
+<body>
+    <embed id="pnacl" width="0" height="0" src="ffmpeg.nmf" type="application/x-pnacl" ps_stdout="dev/tty" ps_stderr="dev/tty" ps_tty_prefix="" arg0="ffmpeg" arg1="-y" arg2="-v" arg3="warning" arg4="-stats" arg5="-nostdin" arg6="-i" arg7="infile" arg8="-c:v" arg9="libx265" arg10="-c:a" arg11="mp3" arg12="-x265-params" arg13="crf=22" arg14="out.mp4">
+</body>
+</html>

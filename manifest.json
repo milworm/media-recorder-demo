@@ -12,6 +12,13 @@
 	// 	}
 	// },
 
+	"web_accessible_resources": [
+		"bower_components/recorderjs/recorderWorker.js",
+		"nacl/manifest.nmf",
+		"nacl/ffmpeg.x86-64.nexe",
+		"nacl/ffmpeg.x86-32.nexe"
+	],
+
 	"externally_connectable": {
 		"matches": ["*://localhost:*/*"]
 	},
@@ -19,17 +26,30 @@
 	"permissions" : [
 		"tabs",
 		"activeTab",
-		"desktopCapture"
+		"desktopCapture",
+		"unlimitedStorage"
 	],
 
-	"content_scripts": [{
-		"matches": ["http://localhost:*/*"],
-		"js": ["js/contentScript.js"],
-		"all_frames": false
-	}],
+	"content_security_policy": "default-src 'self'",
+
+	// "content_scripts": [{
+	// 	"matches": ["http://localhost:*/*"],
+	// 	"js": [
+	// 		"bower_components/chrome-api/patch-worker/patch-worker.js",
+	// 		"bower_components/recorderjs/recorder.js", 
+	// 		"js/contentScript.js"
+	// 	],
+	// 	"all_frames": false
+	// }],
 
 	// runs in the background
 	"background": {
-		"scripts": ["js/recorder.js", "js/background.js"]
+		"scripts": [
+			"bower_components/chrome-api/patch-worker/patch-worker.js",
+			"bower_components/recorderjs/recorder.js",
+			"new/background.js"
+		]
+		// "scripts": ["js/recorder.js", "js/background.js"]
+		// "page": "data/background.html"
 	}
 }
