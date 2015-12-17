@@ -1,5 +1,0 @@
-{
-  "program": {
-    "x86-64": { "url": "/nacl/video_encoder_main-x86-64.nexe" }
-  }
-}

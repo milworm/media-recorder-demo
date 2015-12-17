@@ -18,5 +18,8 @@
   "homepage": "https://github.com/milworm/media-recorder-demo#readme",
   "devDependencies": {
     "gulp-babel": "^5.2.1"
+  },
+  "dependencies": {
+    "gulp": "^3.9.0"
   }
 }

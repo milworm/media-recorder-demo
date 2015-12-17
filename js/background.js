@@ -126,7 +126,87 @@ function startRecording(callback) {
     }).then(callback);
 }
 
+function Recorder() {}
+Recorder.prototype = {
+    start: function start(callback) {
+        this.stream = null;
+        this.recorder = null;
+        this.buffer = [];
+
+        this.getSource().then(this.getStream.bind(this)).then(this.record.bind(this)).then(this.cleanup.bind(this)).then(this.save.bind(this)).then(callback);
+    },
+
+    getStream: function getStream(sourceId) {
+        return new Promise(function (resolve, error) {
+            navigator.webkitGetUserMedia({
+                audio: true,
+                video: {
+                    mandatory: {
+                        chromeMediaSource: 'desktop',
+                        chromeMediaSourceId: sourceId,
+                        maxWidth: screen.width,
+                        maxHeight: screen.height
+                    }
+                }
+            }, resolve, error);
+        });
+    },
+
+    getSource: function getSource() {
+        return new Promise(function (resolve, reject) {
+            chrome.desktopCapture.chooseDesktopMedia(['screen', 'window'], function (id) {
+                resolve(id);
+            });
+        });
+    },
+
+    record: function record(stream) {
+        var timerId,
+            me = this;
+
+        return new Promise(function (resolve, error) {
+            var recorder = new MediaRecorder(stream);
+
+            recorder.ondataavailable = function () {
+                if (e.data) me.buffer.push(e.data);
+
+                clearTimeout(timerId);
+                timerId = setTimeout(resolve, 1000);
+            };
+
+            recorder.start();
+            me.recorder = recorder;
+        });
+    },
+
+    cleanup: function cleanup() {
+        var stream = this.stream,
+            recorder = this.recorder;
+
+        return new Promise(function (resolve, reject) {
+            stream.getTracks().forEach(function (track) {
+                track.stop();
+            });
+
+            try {
+                recorder.stop();
+            } catch (e) {}
+
+            resolve();
+        });
+    },
+
+    save: function save() {
+        var buffer = this.buffer;
+
+        return new Promise(function (resolve, reject) {
+            console.log(buffer);
+            resolve();
+        });
+    }
+};
+
 chrome.runtime.onMessageExternal.addListener(function (request, sender, callback) {
-    startRecording(callback);
+    new Recorder().start(callback);
     return true;
 });

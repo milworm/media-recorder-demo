@@ -22,10 +22,7 @@
 
 	"content_security_policy": "default-src 'self'",
 
-	// runs in the background
 	"background": {
-		"scripts": [
-			"js/background.js"
-		]
+		"scripts": ["js/background.js"]
 	}
 }
